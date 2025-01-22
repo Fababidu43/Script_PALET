@@ -1,8 +1,14 @@
+# gui_app.py
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox, filedialog
 from sku_fetcher import SKUFetcher
 import pandas as pd
+import requests
+import sys
+import os
+import subprocess
+from version import __version__
 
 # Configuration de la base de données
 db_config = {
@@ -12,6 +18,10 @@ db_config = {
     "password": "beauzac",
     "database": "RDYDTA01"
 }
+
+# Informations GitHub pour les mises à jour
+GITHUB_API_URL = "https://api.github.com/repos/Fababidu43/Script_PALET/releases/latest"
+DOWNLOAD_URL_PREFIX = "https://github.com/Fababidu43/Script_PALET/releases/download/"
 
 class Application(tk.Tk):
     def __init__(self, fetcher):
@@ -64,6 +74,10 @@ class Application(tk.Tk):
         # Bouton pour Exporter vers Excel
         export_button = tk.Button(buttons_frame, text="Exporter vers Excel", command=self.export_to_excel)
         export_button.pack(side=tk.LEFT, padx=5)
+
+        # Bouton pour Vérifier les Mises à Jour
+        update_button = tk.Button(buttons_frame, text="Vérifier les mises à jour", command=self.check_for_updates)
+        update_button.pack(side=tk.LEFT, padx=5)
 
         # Treeview pour Afficher les Données
         self.tree = ttk.Treeview(self, columns=("SKU", "Poids", "Longueur", "Largeur", "Hauteur", "Volume",
@@ -169,6 +183,45 @@ class Application(tk.Tk):
             messagebox.showinfo("Succès", f"Données exportées avec succès vers {file_path}.")
         except Exception as e:
             messagebox.showerror("Erreur", f"Erreur lors de l'exportation des données : {e}")
+
+    # Fonction de Vérification des Mises à Jour
+    def check_for_updates(self):
+        try:
+            response = requests.get(GITHUB_API_URL)
+            response.raise_for_status()
+            latest_release = response.json()
+            latest_version = latest_release['tag_name'].lstrip('v')  # Supposons que les tags sont comme v1.0.0
+            if latest_version > __version__:
+                answer = messagebox.askyesno("Mise à jour disponible",
+                                             f"Une nouvelle version ({latest_version}) est disponible. Voulez-vous la télécharger et l'installer ?")
+                if answer:
+                    self.download_and_install(latest_release)
+        except Exception as e:
+            print(f"Erreur lors de la vérification des mises à jour : {e}")
+
+    # Fonction de Téléchargement et d'Installation des Mises à Jour
+    def download_and_install(self, release):
+        assets = release.get('assets', [])
+        installer_url = None
+        for asset in assets:
+            if asset['name'].endswith('.exe'):
+                installer_url = asset['browser_download_url']
+                break
+        if installer_url:
+            try:
+                response = requests.get(installer_url, stream=True)
+                response.raise_for_status()
+                installer_path = os.path.join(os.getenv('TEMP'), 'update_installer.exe')
+                with open(installer_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                # Exécuter l'installateur
+                subprocess.run([installer_path], check=True)
+                sys.exit()  # Fermer l'application actuelle
+            except Exception as e:
+                messagebox.showerror("Erreur", f"Impossible de télécharger ou d'installer la mise à jour : {e}")
+        else:
+            messagebox.showerror("Erreur", "Installer de mise à jour non trouvé.")
 
 if __name__ == "__main__":
     fetcher = SKUFetcher(db_config)
