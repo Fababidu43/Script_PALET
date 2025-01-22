@@ -1,0 +1,16 @@
+2025-01-22 11:00:32,567 - INFO - Journalisation initialisée.
+2025-01-22 11:00:32,568 - INFO - Démarrage de l'application.
+2025-01-22 11:00:32,779 - INFO - Widgets créés avec succès.
+2025-01-22 11:00:32,783 - INFO - Application initialisée.
+2025-01-22 11:00:49,490 - INFO - Option 'Numéro d'Article' sélectionnée.
+2025-01-22 11:00:52,385 - INFO - Texte d'entrée récupéré.
+2025-01-22 11:00:52,386 - INFO - Entrées traitées : ['760312', '760019', '760016', '760354', '760299']
+2025-01-22 11:00:55,034 - WARNING - Recherche par Numéro d'Article sélectionnée sans Numéro de Société.
+2025-01-22 11:01:00,138 - INFO - Texte d'entrée récupéré.
+2025-01-22 11:01:00,139 - INFO - Entrées traitées : ['760312', '760019', '760016', '760354', '760299']
+2025-01-22 11:01:00,139 - INFO - Type de recherche : Article
+2025-01-22 11:01:00,140 - INFO - Numéro de Société fourni : 7
+2025-01-22 11:01:01,083 - INFO - Données récupérées via SKUFetcher.
+2025-01-22 11:01:01,085 - INFO - Treeview vidé.
+2025-01-22 11:01:01,105 - INFO - 5 entrées insérées dans le Treeview et converties en DataFrame.
+2025-01-22 11:01:11,728 - INFO - Application terminée normalement.
