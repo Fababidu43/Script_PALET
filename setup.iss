@@ -19,14 +19,17 @@ Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
-PrivilegesRequired=lowest
+PrivilegesRequired=admin  ; Nécessaire pour installer le pilote ODBC
 
 [Languages]
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [Files]
-; Inclure l'exécutable
+; Inclure l'exécutable de l'application
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+
+; Inclure le pilote ODBC
+Source: "drivers\install_acs_64_allusers.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 ; Inclure les dépendances (comme VC++ Redistributable)
 Source: "dependencies\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
@@ -43,6 +46,9 @@ Name: "desktopicon"; Description: "Créer un raccourci sur le bureau"; GroupDesc
 [Run]
 ; Installation du VC++ Redistributable
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: "Installation des dépendances..."; Flags: waituntilterminated
+
+; Installation du Pilote ODBC
+Filename: "{tmp}\install_acs_64_allusers.exe"; Parameters: "/S"; StatusMsg: "Installation du pilote ODBC..."; Flags: waituntilterminated
 
 ; Exécution de l'application après l'installation (optionnel)
 Filename: "{app}\{#MyAppExeName}"; Description: "Lancer {#MyAppName}"; Flags: nowait postinstall skipifsilent
